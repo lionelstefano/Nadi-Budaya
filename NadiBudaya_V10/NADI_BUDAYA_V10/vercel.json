@@ -3,9 +3,7 @@
   "functions": {
     "main.py": {
       "maxDuration": 60,
-      "includeFiles": [
-        "app/static/**"
-      ]
+      "includeFiles": "app/static/**"
     }
   }
 }
