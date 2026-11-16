@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 420" role="img" aria-label="Ilustrasi Ondel-Ondel Betawi berwarna merah">
+<defs><linearGradient id="robe" x2="0" y2="1"><stop stop-color="#c94835"/><stop offset="1" stop-color="#8f2c26"/></linearGradient><linearGradient id="gold" x2="0" y2="1"><stop stop-color="#f8d68a"/><stop offset="1" stop-color="#bc7a32"/></linearGradient></defs>
+<ellipse cx="110" cy="400" rx="76" ry="13" fill="#183d33" opacity=".15"/>
+<path d="M44 230 Q110 197 176 230 L194 376 Q110 405 26 376Z" fill="url(#robe)" stroke="#6e2b24" stroke-width="5"/>
+<path d="M48 246 L172 246 M38 300 L182 300 M31 348 L189 348" stroke="#f2cb7b" stroke-width="9"/>
+<path d="M59 252 L83 282 L110 252 L137 282 L161 252" fill="none" stroke="#fff1cc" stroke-width="7"/>
+<path d="M110 224 L110 385" stroke="#f7d68d" stroke-width="5"/>
+<path d="M70 224 Q40 245 32 286 M150 224 Q180 245 188 286" fill="none" stroke="#8c382a" stroke-width="20" stroke-linecap="round"/>
+<circle cx="31" cy="291" r="14" fill="#e6a35b" stroke="#8c382a" stroke-width="5"/><circle cx="189" cy="291" r="14" fill="#e6a35b" stroke="#8c382a" stroke-width="5"/>
+<path d="M58 112 Q110 79 162 112 L160 210 Q110 237 60 210Z" fill="#e6a05d" stroke="#6b372d" stroke-width="6"/>
+<path d="M55 129 Q110 87 165 129 L157 157 Q110 127 63 157Z" fill="#273f32"/>
+<path d="M66 181 Q110 205 154 181" fill="none" stroke="#7b3429" stroke-width="7" stroke-linecap="round"/>
+<ellipse cx="87" cy="158" rx="7" ry="10" fill="#282b25"/><ellipse cx="133" cy="158" rx="7" ry="10" fill="#282b25"/>
+<path d="M98 175 Q110 184 122 175" fill="none" stroke="#6e3028" stroke-width="4" stroke-linecap="round"/>
+<path d="M47 116 Q35 73 73 46 Q82 14 110 26 Q139 12 150 48 Q188 64 174 116Z" fill="#c94736" stroke="#6d2a25" stroke-width="6"/>
+<path d="M52 92 Q110 60 168 92 M62 67 Q110 44 158 67" fill="none" stroke="#f4d184" stroke-width="8"/>
+<path d="M110 27 L110 4 M93 28 L80 8 M127 28 L141 8" stroke="#f2cf82" stroke-width="7" stroke-linecap="round"/>
+<circle cx="110" cy="18" r="10" fill="#f6dfa3" stroke="#a46a35" stroke-width="3"/>
+<path d="M77 111 L61 89 M143 111 L159 89" stroke="#f7dfaa" stroke-width="5"/>
+<path d="M84 220 L84 234 M136 220 L136 234" stroke="#e2a45e" stroke-width="8"/>
+</svg>

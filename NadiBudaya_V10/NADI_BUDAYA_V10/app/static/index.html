@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0e6455">
+  <meta name="description" content="Nadi Budaya — ruang belajar dan prototipe Nadi Kit untuk mendukung regenerasi keterampilan Gambang Rancag Betawi.">
+  <title>Nadi Budaya V10 — Ruang Cerita Betawi</title>
+  <link rel="icon" type="image/png" href="/static/favicon.png">
+  <link rel="stylesheet" href="/static/styles.css">
+  <meta name="color-scheme" content="light dark">
+</head>
+<body>
+  <div class="loading-screen" id="loadingScreen" role="status" aria-live="polite">
+    <div class="loading-ornament loading-ornament-one">✦</div><div class="loading-ornament loading-ornament-two">✿</div>
+    <div class="loading-mascots"><img src="/static/ondel-pria.svg" alt=""/><img src="/static/ondel-wanita.svg" alt=""/></div>
+    <img class="loading-logo" src="/static/nadi-budaya-emblem.png" alt="Logo Nadi Budaya"/>
+    <div class="loading-eyebrow">RUANG CERITA BETAWI</div>
+    <h1>Nadi <em>Budaya</em></h1>
+    <p>Menyambungkan cerita, keterampilan, dan generasi.</p>
+    <div class="loading-track"><span id="loadingProgress"></span></div>
+    <div class="loading-meta"><span id="loadingMessage">Menyiapkan ruang belajar...</span><b id="loadingPercent">0%</b></div>
+    <button class="loading-music-toggle" id="loadingMusicToggle" type="button" aria-pressed="false">♫ <span>Musik mati · tekan untuk nyalakan</span></button>
+    <button class="loading-skip hidden" id="loadingSkip" type="button">Lewati pemuatan →</button>
+    <div class="loading-pattern">✿　✦　❀　✦　✿</div>
+  </div>
+
+  <div class="intro-overlay hidden" id="introOverlay" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+    <div class="intro-card">
+      <div class="intro-topline"><img class="brand-emblem intro-brand-emblem" src="/static/nadi-budaya-emblem.png" alt="Logo Nadi Budaya"/><span class="tag-soft">PENGANTAR NADI BUDAYA</span></div>
+      <div class="intro-step active" data-intro-step="0">
+        <div class="intro-art"><img src="/static/ondel-pria.svg" alt="Ondel-Ondel laki-laki"/><div class="intro-sun">✦</div><img src="/static/ondel-wanita.svg" alt="Ondel-Ondel perempuan"/></div>
+        <div class="eyebrow">SELAMAT DATANG</div><h2 id="introTitle">Mari rawat cerita, <em>teruskan irama.</em></h2>
+        <p>Nadi Budaya adalah ruang belajar interaktif untuk mengenal pantun, cerita, dan keterampilan Gambang Rancag Betawi.</p>
+      </div>
+      <div class="intro-step" data-intro-step="1">
+        <div class="intro-symbols"><span>01 · Peta Kompetensi</span><span>02 · Pencocokan Kebutuhan</span><span>03 · Pendampingan Adaptif</span><span>04 · Paspor Budaya</span></div>
+        <div class="eyebrow">BELAJAR SESUAI KEBUTUHAN</div><h2>Empat langkah, <em>satu perjalanan.</em></h2>
+        <p>Mulai dengan memetakan kemampuan, menentukan prioritas latihan, mengikuti jalur belajar, lalu mencatat perkembanganmu.</p>
+      </div>
+      <div class="intro-step" data-intro-step="2">
+        <div class="eyebrow">PILIH RUANG MASUK</div><h2>Siapa yang akan <em>menggunakan aplikasi?</em></h2>
+        <p>Peserta dapat langsung belajar. Guru atau penelaah dapat membuka ruang penilaian menggunakan PIN yang disiapkan pengelola.</p>
+        <div class="intro-role-grid"><button class="intro-role-card" id="introParticipant"><span>✍</span><b>Peserta</b><small>Belajar, bermain, dan menyimpan perkembangan.</small></button><button class="intro-role-card" id="introTeacher"><span>▤</span><b>Guru / Penelaah</b><small>Mengisi rubrik dan memberi catatan perkembangan.</small></button></div>
+        <div class="teacher-pin-area hidden" id="teacherPinArea"><label for="teacherPin">PIN Ruang Guru</label><div><input id="teacherPin" type="password" inputmode="numeric" maxlength="32" placeholder="Masukkan PIN"/><button class="btn btn-primary" id="teacherLogin">Masuk</button></div><small>Mode lokal: PIN demo 2468. Untuk publik, atur NADI_GURU_PIN pada environment server.</small></div>
+      </div>
+      <div class="intro-controls"><button class="text-button" id="introSkip">Lewati pengantar</button><div><button class="btn btn-outline hidden" id="introBack">Kembali</button><button class="btn btn-primary" id="introNext">Lanjut →</button></div></div>
+      <div class="intro-dots"><i class="active"></i><i></i><i></i></div>
+    </div>
+  </div>
+
+  <audio id="betawiAudio" src="/static/audio/betawi-background.mp3" preload="none" loop aria-label="Musik latar Betawi"></audio>
+  <div class="music-status-dock" id="musicStatusDock" role="status" aria-live="polite" aria-atomic="true">
+    <span class="music-status-dot" aria-hidden="true"></span><span id="musicStatusText">Musik Betawi mati</span>
+  </div>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#home" aria-label="Nadi Budaya Beranda">
+        <img class="brand-emblem" src="/static/nadi-budaya-emblem.png" alt=""/>
+        <span><strong>NADI BUDAYA</strong><small>Ruang Cerita Betawi</small></span>
+      </a>
+      <div class="side-caption">RUANG JELAJAH</div>
+      <nav class="side-nav" aria-label="Navigasi utama">
+        <button class="nav-link active" data-page="home"><span>⌂</span> Beranda</button>
+        <button class="nav-link" data-page="map"><span>◈</span> Peta Belajar</button>
+        <button class="nav-link" data-page="learn"><span>▤</span> Belajar Pantun</button>
+        <button class="nav-link" data-page="games"><span>✣</span> Arena Permainan <i class="nav-count">80+</i></button>
+        <button class="nav-link" data-page="stage"><span>♫</span> Panggung Rancag</button>
+        <button class="nav-link" data-page="studio"><span>✎</span> Studio Pantun</button>
+        <button class="nav-link" data-page="camera"><span>◉</span> Kamera Interaktif</button>
+        <div class="side-caption side-caption-spaced">NADI KIT</div>
+        <button class="nav-link" data-page="competency"><span>⌁</span> Peta Kompetensi</button>
+        <button class="nav-link" data-page="path"><span>⇢</span> Jalur Pendampingan</button>
+        <button class="nav-link" data-page="passport"><span>▣</span> Paspor Budaya</button>
+        <button class="nav-link hidden" data-page="teacher" id="teacherNav"><span>▤</span> Ruang Guru</button>
+        <div class="side-caption side-caption-spaced">PENGATURAN</div>
+        <button class="nav-link" data-page="settings"><span>⚙</span> Aksesibilitas</button>
+        <button class="nav-link" data-page="research"><span>⌂</span> Tentang Riset</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="mini-slogan"><span>✿</span><p>Rawat cerita.<br><b>Teruskan irama.</b></p></div>
+        <small>Versi 10.0 · Prototipe penelitian</small>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button class="icon-button mobile-menu" id="mobileMenu" aria-label="Buka menu">☰</button>
+        <div class="crumb"><span>Ruang Belajar</span><b>/</b><strong id="pageCrumb">Beranda</strong></div>
+        <div class="top-actions">
+          <button class="music-button" id="readPageQuick" type="button" title="Bacakan halaman aktif" aria-label="Bacakan halaman aktif">🔊 <span>Dengarkan</span></button><button class="music-button" id="musicToggle" aria-pressed="false" title="Nyalakan musik Betawi">♫ <span>Musik Betawi</span></button>
+          <div class="xp-pill"><span>✦</span><b id="topXp">0 XP</b></div>
+          <button class="profile-chip" data-page="passport"><span class="avatar">✿</span><span id="topName">Penjelajah</span><span>⌄</span></button>
+        </div>
+      </header>
+
+      <div class="content" id="content" tabindex="-1">
+        <div class="v10-deploy-notice hidden" id="deploymentNotice" role="status" aria-live="polite"></div>
+        <section class="page active" id="page-home">
+          <div class="hero-card">
+            <div class="hero-copy">
+              <div class="eyebrow"><span class="eyebrow-dot"></span> JELAJAH BUDAYA BETAWI</div>
+              <h1>Cerita lama,<br><em>semangat baru.</em></h1>
+              <p>Belajar pantun, merangkai cerita, dan mengenal Gambang Rancag lewat pengalaman yang seru.</p>
+              <div class="hero-actions"><button class="btn btn-light" data-page="map">Mulai jelajah <span>→</span></button><button class="text-button light-text" data-page="learn">Lihat materi <span>↗</span></button></div>
+            </div>
+            <div class="hero-art" aria-label="Ilustrasi dekoratif panggung budaya Betawi">
+              <div class="sun-disc"></div><div class="cloud cloud-one"></div><div class="cloud cloud-two"></div>
+              <div class="art-roof"></div><div class="art-house"><div class="house-door"></div><div class="house-window"></div></div>
+              <div class="art-drum drum-one"></div><div class="art-drum drum-two"></div>
+              <div class="art-flower">✿</div><div class="art-note">♫</div>
+              <div class="art-caption">Ruang cerita<br><b>Betawi</b></div>
+              <div class="ondel-pair" aria-label="Ondel-Ondel Betawi sebagai maskot Nadi Budaya"><img src="/static/ondel-pria.svg" alt="Ondel-Ondel laki-laki"/><img src="/static/ondel-wanita.svg" alt="Ondel-Ondel perempuan"/></div>
+            </div>
+            <div class="hero-stamp">✦<br><small>RANCAG<br>BERSAMA</small></div>
+          </div>
+
+          <div class="section-heading"><div><div class="eyebrow">LANJUTKAN PERJALANAN</div><h2>Hari ini mau ke mana?</h2></div><button class="text-button" data-page="map">Lihat semua <span>→</span></button></div>
+          <div class="quick-grid">
+            <button class="quick-card quick-cyan" data-page="learn"><span class="quick-icon">✍</span><span class="quick-tag">MULAI DARI DASAR</span><strong>Belajar Pantun</strong><small>Pahami sampiran, isi, dan rima.</small><span class="card-arrow">↗</span></button>
+            <button class="quick-card quick-gold" data-page="games"><span class="quick-icon">✣</span><span class="quick-tag">ASAH KETERAMPILAN</span><strong>Arena Permainan</strong><small>80 soal dan tantangan berbagai mode.</small><span class="card-arrow">↗</span></button>
+            <button class="quick-card quick-rose" data-page="stage"><span class="quick-icon">♫</span><span class="quick-tag">BERANI BERSUARA</span><strong>Panggung Rancag</strong><small>Latihan merespons pantun dan cerita.</small><span class="card-arrow">↗</span></button>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="panel progress-panel"><div class="panel-head"><div><div class="eyebrow">PASPOR PERKEMBANGAN</div><h3>Perjalanan budayamu</h3></div><button class="small-link" data-page="passport">Buka paspor →</button></div>
+              <div class="progress-main"><div class="level-medal"><span>✿</span><small>LVL</small><b id="levelNumber">1</b></div><div class="progress-info"><strong id="homeName">Penjelajah Budaya</strong><p><span id="homeXp">0</span> XP terkumpul · <span id="homeActivities">0</span> aktivitas</p><div class="progress-track"><span id="xpProgress" style="width:0%"></span></div><small id="xpHint">100 XP menuju level berikutnya</small></div></div>
+              <div class="stat-strip"><div><b id="statQuiz">0</b><small>Soal dijawab</small></div><div><b id="statCorrect">0</b><small>Jawaban benar</small></div><div><b id="statGames">0</b><small>Game selesai</small></div></div>
+            </div>
+            <div class="panel daily-panel"><div class="daily-top"><span class="daily-icon">☀</span><span class="eyebrow">TANTANGAN HARI INI</span></div><h3>Rangkai satu pantun</h3><p>Latih empat baris pantun dengan pesan yang ingin kamu sampaikan.</p><button class="btn btn-primary" data-page="studio">Buka studio <span>→</span></button><div class="daily-deco">✦</div></div>
+          </div>
+          <div class="notice-strip"><span>ⓘ</span><p>Materi dan indikator keterampilan dalam prototipe ini masih perlu ditelaah bersama praktisi Gambang Rancag.</p><button data-page="research">Tentang riset →</button></div>
+        </section>
+
+        <section class="page" id="page-map">
+          <div class="page-intro"><div><div class="eyebrow">PETA PERJALANAN</div><h1>Jelajahi ruang <em>Nadi Budaya.</em></h1><p>Pilih ruang belajar sesuai minatmu. Setiap tempat membawamu ke keterampilan yang berbeda.</p></div><div class="intro-badge">✿ 5 RUANG BELAJAR</div></div>
+          <div class="world-map">
+            <div class="map-topline"><span>✦ PETA BELAJAR INTERAKTIF</span><span>Jelajah sesuai ritmemu</span></div>
+            <div class="map-landscape"><div class="map-path"></div>
+              <button class="map-zone zone-one" data-page="learn"><span class="zone-art">🏡</span><b>Rumah Pantun</b><small>Kenali dasar pantun</small><i>01</i></button>
+              <button class="map-zone zone-two" data-page="games"><span class="zone-art">📚</span><b>Lorong Cerita</b><small>Makna dan alur cerita</small><i>02</i></button>
+              <button class="map-zone zone-three" data-page="stage"><span class="zone-art">🎭</span><b>Panggung Rancag</b><small>Berbalas & berkait</small><i>03</i></button>
+              <button class="map-zone zone-four" data-page="camera"><span class="zone-art">🥁</span><b>Balai Irama</b><small>Latihan ekspresi</small><i>04</i></button>
+              <button class="map-zone zone-five" data-page="passport"><span class="zone-art">🏵</span><b>Galeri Budaya</b><small>Catat perkembangan</small><i>05</i></button>
+              <div class="map-vine vine-a">〰</div><div class="map-vine vine-b">〰</div><div class="map-spark">✦</div>
+            </div>
+            <div class="map-foot"><span>✿</span> Tidak ada urutan wajib. Mulailah dari ruang yang paling menarik bagimu.</div>
+          </div>
+        </section>
+
+        <section class="page" id="page-learn">
+          <div class="page-intro"><div><div class="eyebrow">RUMAH PANTUN</div><h1>Kenali pantun, <em>kenali polanya.</em></h1><p>Materi ringkas untuk memahami bentuk dasar pantun sebelum mulai merangkai.</p></div><span class="intro-emoji">✍</span></div>
+          <div class="lesson-layout">
+            <div class="lesson-main panel"><div class="lesson-number">01 / MATERI DASAR</div><h2>Empat baris, dua bagian.</h2><p>Pantun lazimnya tersusun dari empat baris. Dua baris pertama disebut <b>sampiran</b>, sedangkan dua baris terakhir disebut <b>isi</b>. Bunyi akhir baris biasanya membentuk rima silang a-b-a-b.</p>
+              <div class="poem-example"><div class="poem-label label-sampiran">SAMPIRAN <span>BARIS 1–2</span></div><p>Jalan pagi melihat taman <span class="rhyme-a">(a)</span></p><p>Singgah sebentar membeli jamu <span class="rhyme-b">(b)</span></p><div class="poem-divider"></div><div class="poem-label label-isi">ISI <span>BARIS 3–4</span></div><p>Rajin belajar jadi pedoman <span class="rhyme-a">(a)</span></p><p>Ilmu berguna sepanjang waktu <span class="rhyme-b">(b)</span></p></div>
+              <div class="lesson-tip"><span>✦</span><p><b>Ingat:</b> sampiran menjadi pengantar bunyi, sementara isi menyampaikan maksud atau pesan. Hubungan keduanya tidak harus berupa hubungan sebab-akibat.</p></div>
+              <div class="lesson-actions"><button class="btn btn-primary" data-page="games">Uji pemahaman <span>→</span></button><button class="btn btn-outline" data-page="studio">Coba menulis</button></div>
+            </div>
+            <div class="lesson-side"><div class="panel mini-lesson"><span class="side-illus">🔎</span><div class="eyebrow">CEK KUNCI</div><h3>Yang perlu diperhatikan</h3><ul><li>Jumlah baris dalam satu bait</li><li>Pembagian sampiran dan isi</li><li>Keselarasan bunyi akhir</li><li>Pesan yang mudah dipahami</li></ul></div><div class="panel source-card"><div class="eyebrow">RUJUKAN MATERI</div><p>Materi pengantar diringkas dari sumber pendidikan dan kebudayaan.</p><a href="https://repositori.kemendikdasmen.go.id/8711/1/Bahasa%20Indonesia%20Kelas%20XI.pdf" target="_blank" rel="noopener">Buku Bahasa Indonesia Kelas XI ↗</a><a href="https://badanbahasa.kemendikdasmen.go.id/artikel-detail/3812/belajar-pantun-melalui-google-sites" target="_blank" rel="noopener">Badan Bahasa: Belajar Pantun ↗</a></div></div>
+          </div>
+        </section>
+
+        <section class="page" id="page-games">
+          <div class="page-intro"><div><div class="eyebrow">ARENA PERMAINAN</div><h1>Main sambil <em>mengasah rasa.</em></h1><p>Soal dan tantangan bertingkat. Setiap latihan mencatat proses, bukan hanya hasil.</p></div><div class="game-total"><b>195+</b><span>TANTANGAN</span></div></div>
+          <div class="game-tabs" role="tablist"><button class="game-tab active" data-game="quiz">Kuis Cepat</button><button class="game-tab" data-game="arrange">Susun Pantun</button><button class="game-tab" data-game="match">Cocokkan</button><button class="game-tab" data-game="story">Tebak Cerita</button><button class="game-tab" data-game="rhyme">Detektif Rima</button></div>
+          <div class="game-area" id="gameArea"></div>
+        </section>
+
+        <section class="page" id="page-stage">
+          <div class="page-intro"><div><div class="eyebrow">PANGGUNG RANCAG</div><h1>Berani merangkai, <em>berani merespons.</em></h1><p>Latihan simulasi berbalas pantun. Kamu boleh menjawab lewat teks tanpa harus merekam suara.</p></div><span class="intro-emoji">🎭</span></div>
+          <div class="stage-banner"><div class="stage-lights">✦　✦　✦</div><div class="stage-mic">♫</div><div class="stage-copy"><span class="eyebrow">GILIRANMU DI PANGGUNG</span><h2>Jaga alur, sambung cerita.</h2><p>Mulai dengan membaca pantun pemantik. Lalu susun balasan empat baris dengan pesan yang sesuai.</p></div></div>
+          <div class="stage-grid"><div class="panel prompt-panel"><div class="panel-head"><h3>🎤 Pantun pemantik</h3><span class="tag-soft">SIMULASI</span></div><blockquote id="stagePrompt">Pergi ke pasar membeli ketan,<br>Singgah sebentar di tepi kali.<br>Kalau cerita ingin dilanjutkan,<br>Pesan apa yang hendak kau gali?</blockquote><button class="small-link" id="newPrompt">Ganti pemantik ↻</button></div><div class="panel response-panel"><div class="panel-head"><h3>Balasan pantunmu</h3><span class="tag-soft">4 BARIS</span></div><div class="line-inputs"><textarea id="stageLine1" rows="1" placeholder="Baris 1 — sampiran"></textarea><textarea id="stageLine2" rows="1" placeholder="Baris 2 — sampiran"></textarea><textarea id="stageLine3" rows="1" placeholder="Baris 3 — isi / balasan"></textarea><textarea id="stageLine4" rows="1" placeholder="Baris 4 — isi / balasan"></textarea></div><div class="stage-actions"><button class="btn btn-primary" id="stageCheck">Tinjau latihan <span>→</span></button><span class="muted-note">Skor otomatis hanya pemeriksaan awal.</span></div><div id="stageResult" class="result-box hidden" aria-live="polite"></div></div></div>
+          <div class="panel voice-panel"><div class="panel-head"><div><div class="eyebrow">OPSIONAL · LATIHAN SUARA</div><h3>Rekam latihanmu sendiri</h3></div><span class="tag-soft">TIDAK DIUNGGAH</span></div><p class="muted-note">Rekaman hanya berada di browser ini. Mikrofon baru diminta setelah kamu menekan mulai. Tersedia pilihan teks di atas bagi siapa pun yang tidak ingin atau tidak dapat merekam suara.</p><div class="voice-controls"><button class="btn btn-primary" id="recordStart">Mulai rekam suara</button><button class="btn btn-outline" id="recordStop" disabled>Berhenti</button><span class="muted-note" id="recordStatus">Belum ada rekaman.</span></div><audio id="recordedAudio" controls class="hidden"></audio><button class="small-link hidden" id="downloadRecording">Unduh rekaman ↓</button></div>
+          <div class="note-strip"><span>ⓘ</span><p>Simulasi ini tidak menilai spontanitas, pelantunan, atau mutu budaya secara menyeluruh. Gunakan rubrik yang ditelaah praktisi untuk evaluasi penelitian.</p></div>
+        </section>
+
+        <section class="page" id="page-studio">
+          <div class="page-intro"><div><div class="eyebrow">PANTUN CREATOR STUDIO</div><h1>Rangkai kata, <em>buat ceritamu.</em></h1><p>Tempat menulis, mencoba rima, dan menyimpan karya pantunmu.</p></div><span class="intro-emoji">✎</span></div>
+          <div class="studio-layout"><div class="panel editor-panel"><div class="panel-head"><h3>✨ Kanvas pantun</h3><span class="tag-soft">KARYA PRIBADI</span></div><label class="field-label" for="pantunTitle">Judul karya</label><input id="pantunTitle" class="text-input" maxlength="60" placeholder="Contoh: Semangat Belajar" /><div class="stanza-controls"><button class="small-link" id="addStanza">＋ Tambah bait berkait</button><span class="muted-note" id="stanzaCount">1 dari 3 bait · 4 baris per bait</span></div><div class="editor-lines" id="editorStanzas"><div class="stanza-editor" data-stanza="1"><div class="stanza-heading">BAIT 1 <span>01–04</span></div><label class="editor-line"><span>01 <small>SAMPIRAN</small></span><input id="creator1" maxlength="150" placeholder="Tulis baris pertama..." /></label><label class="editor-line"><span>02 <small>SAMPIRAN</small></span><input id="creator2" maxlength="150" placeholder="Tulis baris kedua..." /></label><label class="editor-line"><span>03 <small>ISI</small></span><input id="creator3" maxlength="150" placeholder="Tulis pesan utama..." /></label><label class="editor-line"><span>04 <small>ISI</small></span><input id="creator4" maxlength="150" placeholder="Tulis penutup..." /></label></div></div><div class="editor-tools"><button class="btn btn-outline" id="analyzePantun">Periksa struktur</button><button class="btn btn-primary" id="savePantun">Simpan pantun <span>→</span></button></div><div id="creatorFeedback" class="feedback-list" aria-live="polite"></div></div><aside class="studio-side"><div class="panel word-bank"><div class="eyebrow">BANK KATA IDE</div><h3>Mulai dari tema</h3><div class="theme-chips"><button data-word="persahabatan">Persahabatan</button><button data-word="semangat">Semangat</button><button data-word="budaya">Budaya</button><button data-word="alam">Alam</button><button data-word="keluarga">Keluarga</button><button data-word="kampung">Kampung</button><button data-word="keberanian">Keberanian</button><button data-word="persatuan">Persatuan</button><button data-word="pendidikan">Pendidikan</button><button data-word="pertunjukan">Pertunjukan</button><button data-word="pewarisan">Pewarisan</button><button data-word="harapan">Harapan</button><button data-word="persaudaraan">Persaudaraan</button></div><p id="wordSuggestion">Pilih tema untuk melihat inspirasi kata.</p></div><div class="panel saved-mini"><div class="eyebrow">KARYA TERSIMPAN</div><h3 id="savedCount">0 pantun</h3><p>Karyamu tersimpan pada perangkat ini.</p><button class="small-link" data-page="passport">Lihat paspor →</button></div></aside></div>
+        </section>
+
+        <section class="page" id="page-camera">
+          <div class="page-intro"><div><div class="eyebrow">PANGGUNG BETAWI · STUDIO GERAK</div><h1>Lihat contoh, <em>coba gerakanmu.</em></h1><p>Kamera dan video panduan tampil berdampingan. Pilih aksesori, ikuti tahap latihan, lalu rekam penampilanmu.</p></div><span class="intro-emoji">🎭</span></div>
+
+          <div class="stage-v8-layout v81-stage-layout">
+            <section class="panel camera-panel camera-panel-v8 v81-camera-panel" aria-labelledby="cameraPanelTitle">
+              <div class="camera-head">
+                <div><span class="eyebrow">KAMERA LANGSUNG</span><h3 id="cameraPanelTitle">Panggung Betawi</h3></div>
+                <div class="camera-head-actions"><span class="camera-status" id="cameraStatus"><i></i> Kamera mati</span><button class="camera-fullscreen-btn" id="cameraFullscreen" type="button" aria-label="Perbesar tampilan kamera" title="Perbesar kamera">⛶</button></div>
+              </div>
+              <div class="camera-screen stage-camera-screen camera-screen-v8" id="cameraScreen">
+                <div class="camera-placeholder"><span>🎭</span><b>Siap naik panggung?</b><small>Pilih aksesori, lalu nyalakan kamera. Untuk latihan tari, atur jarak agar tubuh terlihat.</small></div>
+                <img id="cameraStream" alt="Kamera langsung dengan aksesori digital Betawi" class="hidden">
+                <video id="browserCameraVideo" class="browser-camera-source" muted playsinline aria-hidden="true"></video>
+                <canvas id="browserCameraCanvas" class="browser-camera-canvas hidden" aria-label="Kamera langsung dengan filter digital Betawi"></canvas>
+                <div class="stage-countdown hidden" id="stageCountdown" aria-live="assertive">3</div>
+                <div class="stage-recording-pill hidden" id="stageRecordingPill"><i></i> REC <b id="stageRecordTime">00:00</b></div>
+              </div>
+              <canvas id="cameraRecordCanvas" class="record-canvas" width="1280" height="720" aria-hidden="true"></canvas>
+              <div class="camera-framing-note"><span>ⓘ</span><p><b>Tips posisi kamera:</b> untuk filter wajah, posisikan wajah di tengah. Untuk latihan tari, mundur sekitar 1,5–2 meter dan pastikan kepala, bahu, serta tangan terlihat. Jarak ini panduan awal dan dapat disesuaikan.</p></div>
+              <div class="camera-v8-toolbar v9-camera-toolbar">
+                <label for="cameraModeSelect">Mode kamera
+                  <select id="cameraModeSelect" class="text-input">
+                    <option value="stage">Panggung: filter + gerak</option>
+                    <option value="filter">Coba filter wajah</option>
+                    <option value="dance">Belajar gerak saja</option>
+                  </select>
+                </label>
+                <label for="cameraGroupMode">Efek untuk beberapa orang
+                  <select id="cameraGroupMode" class="text-input">
+                    <option value="same">Satu efek untuk semua wajah</option>
+                    <option value="mix">Efek berbeda otomatis per wajah</option>
+                  </select>
+                </label>
+              </div>
+              <p class="v9-group-note" id="cameraGroupHint">Filter yang dipilih akan dipakai bersama oleh semua wajah yang terdeteksi (maksimal 4 orang).</p>
+              <label class="sr-only" for="cameraFilterSelect">Aksesori digital</label>
+              <select id="cameraFilterSelect" class="sr-only" tabindex="-1" aria-hidden="true">
+                <option value="iket">Iket motif</option>
+                <option value="mahkota">Mahkota panggung</option>
+                <option value="kembang">Kembang kepala</option>
+                <option value="selendang">Selendang panggung</option>
+                <option value="topeng">Topeng ilustratif</option>
+                <option value="ondel_merah">Ondel merah</option>
+                <option value="ondel_biru">Ondel biru</option>
+                <option value="abang">Abang</option>
+                <option value="mahkota_kembang">Mahkota kembang</option>
+                <option value="bando_emas">Bando emas</option>
+                <option value="topeng_kembang">Topeng kembang</option>
+                <option value="pita_merah">Pita merah</option>
+                <option value="bunga_tanjung">Bunga Tanjung</option>
+                <option value="pucuk_rebung">Pucuk Rebung</option>
+                <option value="mega_mendung">Mega Mendung</option>
+                <option value="mahkota_bintang">Mahkota Bintang</option>
+                <option value="none">Tanpa aksesori</option>
+              </select>
+              <div class="camera-controls camera-v8-controls">
+                <button class="btn btn-primary" id="cameraStart">Mulai kamera</button>
+                <button class="btn btn-outline" id="cameraStop" disabled>Matikan kamera</button>
+                <span class="muted-note" id="cameraMessage">Kamera lokal belum aktif.</span>
+              </div>
+              <div class="camera-live-stats">
+                <span>🙂 Wajah: <b id="cameraFaceStatus">Belum terdeteksi</b></span><span>👥 Jumlah: <b id="cameraFaceCount">0 / 4</b></span>
+                <span>🧍 Tubuh: <b id="cameraPoseStatus">Belum terdeteksi</b></span>
+              </div>
+              <div class="camera-record-actions" aria-label="Kontrol rekaman">
+                <div class="camera-record-copy"><span class="eyebrow">REKAM PENAMPILAN</span><b>Siap tampil di Panggung Betawi?</b><small>Tekan rekam untuk countdown 3–2–1 dan merekam maksimal 30 detik.</small></div>
+                <div class="camera-record-buttons">
+                  <button class="btn btn-primary" id="stageRecordStart" disabled>● Mulai rekam 30 detik</button>
+                  <button class="btn btn-outline" id="stageRecordStop" disabled>Hentikan</button>
+                </div>
+              </div>
+              <section class="panel stage-record-controls stage-record-controls-v8 v81-record-panel" aria-labelledby="recordHeading">
+                <div class="record-panel-heading"><div><span class="eyebrow">PENGATURAN REKAMAN</span><b id="recordHeading">Judul dan suara penampilan</b><small>Hasil rekaman bisa ditinjau sebelum disimpan ke Paspor Budaya.</small></div><span class="record-duration-badge">00:30</span></div>
+                <label class="mic-option"><input type="checkbox" id="includeStageMic"> Sertakan suara mikrofon</label>
+                <label class="field-label" for="stageRecordTitle">Judul penampilan</label>
+                <input id="stageRecordTitle" class="text-input" maxlength="60" value="Penampilan Panggung Betawi" placeholder="Beri judul penampilanmu" />
+                <p class="muted-note" id="stageRecordStatus" aria-live="polite">Nyalakan kamera untuk mengaktifkan tombol rekam.</p>
+                <div class="stage-record-result hidden" id="stageRecordResult">
+                  <div class="record-result-heading"><b>Hasil rekaman</b><span class="tag-soft">PRATINJAU · BUKAN KAMERA LANGSUNG</span></div>
+                  <video id="stageRecordedVideo" class="stage-recorded-video" controls playsinline aria-label="Pratinjau hasil rekaman panggung"></video>
+                  <div class="stage-save-actions hidden" id="stageSaveActions">
+                    <button class="btn btn-primary" id="saveStageToPassport" type="button">Simpan ke Paspor Budaya</button>
+                    <a id="downloadStageVideo" class="btn btn-outline stage-download" download="nadi-panggung-betawi.webm">Unduh video ↓</a>
+                  </div>
+                </div>
+                <p class="muted-note" id="stageSaveHelp">Pilih Simpan ke Paspor untuk menyimpan video secara lokal. Maksimal 20 MB per video.</p>
+              </section>
+            </section>
+
+            <aside class="stage-v8-guide-column v81-guide-column" aria-label="Video dan panduan gerak">
+              <section class="panel dance-tutorial-panel v81-tutorial-panel" aria-labelledby="danceTutorialTitle">
+                <div class="panel-head"><div><span class="eyebrow">VIDEO REFERENSI PILIHANMU</span><h3 id="danceTutorialTitle">Contoh gerakan tari</h3></div><span class="tag-soft">YOUTUBE</span></div>
+                <div class="dance-tutorial-frame">
+                  <iframe id="danceTutorialFrame" src="https://www.youtube-nocookie.com/embed/jKrG4fNhKVI?rel=0&modestbranding=1&start=0&end=30" title="Cuplikan 30 detik video referensi gerakan tari" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                </div>
+                <div class="clip-selector" aria-label="Pilih cuplikan latihan 30 detik">
+                  <div class="clip-selector-copy"><b>Cuplikan latihan 30 detik</b><small>Pilih titik mulai, lalu video akan dibatasi ke rentang 30 detik berikutnya.</small></div>
+                  <label for="danceClipStart">Mulai pada detik
+                    <input id="danceClipStart" class="text-input" type="number" min="0" max="142" step="1" value="0" inputmode="numeric">
+                  </label>
+                  <div class="clip-range-preview"><span id="danceClipRange">00:00–00:30</span><small>Durasi tetap 30 detik · video referensi 2:52</small></div>
+                  <button class="btn btn-primary" id="applyDanceClip" type="button">Gunakan cuplikan 30 detik</button>
+                </div>
+                <a class="tutorial-external-link" href="https://youtu.be/jKrG4fNhKVI?si=GG5NF0d2zUq2Pp_g" target="_blank" rel="noopener noreferrer">Buka video lengkap di YouTube ↗</a>
+                <p class="tutorial-note">Cuplikan awal disetel 00:00–00:30. Geser titik mulai untuk memilih bagian lain yang paling relevan. Video ini menjadi referensi visual; urutan koreografi harus ditelaah bersama praktisi sebelum disebut gerakan tari Betawi yang tervalidasi.</p>
+              </section>
+
+              <section class="panel dance-guide-card dance-guide-card-v8 v81-dance-guide" aria-labelledby="danceGuideHeading">
+                <div class="panel-head"><div><span class="eyebrow">PANDUAN GERAK · 30 DETIK</span><h3 id="danceGuideHeading">Ikuti tahap demi tahap</h3></div><span class="tag-soft" id="danceStepCounter">01 / 05</span></div>
+                <span class="dance-step-time" id="danceStepTime">CUPLIKAN 00:00–00:05</span>
+                <div class="dance-step-visual" id="danceStepVisual">🧍</div>
+                <div class="dance-step-copy"><b id="danceStepTitle">Posisi awal</b><p id="danceStepDescription">Berdiri nyaman dan arahkan tubuh ke kamera. Amati posisi penari pada video.</p></div>
+                <div class="dance-step-progress" id="danceStepProgress"><i class="active"></i><i></i><i></i><i></i><i></i></div>
+                <div class="dance-guide-actions"><button class="btn btn-outline" id="danceStepPrev" disabled>← Sebelumnya</button><button class="btn btn-primary" id="danceStepNext">Berikutnya →</button></div>
+                <div class="gesture-result" id="danceFeedback" aria-live="polite">Nyalakan kamera dalam mode belajar gerak atau panggung.</div>
+                <p class="tutorial-note">Panduan ini membantu peserta mengamati dan meniru cuplikan. Gerakan rinci belum ditranskripsi dari video; praktisi perlu menelaah urutannya sebelum dipakai sebagai materi koreografi Betawi.</p>
+              </section>
+            </aside>
+
+            <div class="stage-v8-extras v81-stage-extras">
+              <section class="panel accessory-picker v81-accessory-picker" aria-labelledby="accessoryPickerTitle">
+                <div class="accessory-picker-heading"><div><span class="eyebrow">PILIH EFEK</span><h4 id="accessoryPickerTitle">Galeri aksesori digital Betawi</h4><p class="muted-note">Pilih kartu untuk mengganti aksesori pada kamera.</p></div><span class="tag-soft">17 PILIHAN</span></div>
+                <div class="accessory-gallery v81-accessory-gallery" id="accessoryGallery">
+                  <button type="button" class="accessory-choice selected" data-camera-filter="iket" aria-pressed="true"><span class="accessory-art art-iket">✿</span><b>Iket Motif</b><small>Hiasan dahi</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="mahkota" aria-pressed="false"><span class="accessory-art art-mahkota">♛</span><b>Mahkota Panggung</b><small>Ornamen kepala</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="kembang" aria-pressed="false"><span class="accessory-art art-kembang">✿</span><b>Kembang Kepala</b><small>Hiasan samping</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="topeng" aria-pressed="false"><span class="accessory-art art-topeng">🎭</span><b>Topeng Ilustratif</b><small>Efek mata</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="ondel_merah" aria-pressed="false"><span class="accessory-art art-ondel-red">●</span><b>Ondel Merah</b><small>Mahkota karakter</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="ondel_biru" aria-pressed="false"><span class="accessory-art art-ondel-blue">●</span><b>Ondel Biru</b><small>Mahkota karakter</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="abang" aria-pressed="false"><span class="accessory-art art-abang">▰</span><b>Abang</b><small>Iket gelap</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="selendang" aria-pressed="false"><span class="accessory-art art-selendang">〰</span><b>Selendang</b><small>Efek bahu</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="mahkota_kembang" aria-pressed="false"><span class="accessory-art art-mahkota-kembang">✿</span><b>Mahkota Kembang</b><small>Ornamen bunga</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="bando_emas" aria-pressed="false"><span class="accessory-art art-bando-emas">◇</span><b>Bando Emas</b><small>Pita kepala</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="topeng_kembang" aria-pressed="false"><span class="accessory-art art-topeng-kembang">❀</span><b>Topeng Kembang</b><small>Topeng dekoratif</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="pita_merah" aria-pressed="false"><span class="accessory-art art-pita-merah">🎀</span><b>Pita Merah</b><small>Hiasan kepala</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="bunga_tanjung" aria-pressed="false"><span class="accessory-art art-bunga-tanjung">✿</span><b>Bunga Tanjung</b><small>Ornamen sisi</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="pucuk_rebung" aria-pressed="false"><span class="accessory-art art-pucuk-rebung">△</span><b>Pucuk Rebung</b><small>Motif geometris</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="mega_mendung" aria-pressed="false"><span class="accessory-art art-mega-mendung">☁</span><b>Mega Mendung</b><small>Ornamen awan</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="mahkota_bintang" aria-pressed="false"><span class="accessory-art art-mahkota-bintang">✦</span><b>Mahkota Bintang</b><small>Efek panggung</small></button>
+                  <button type="button" class="accessory-choice" data-camera-filter="none" aria-pressed="false"><span class="accessory-art art-none">○</span><b>Natural</b><small>Tanpa aksesori</small></button>
+                </div>
+                <p class="accessory-disclaimer">Aksesori merupakan efek digital ilustratif, bukan replika busana atau topeng adat. Bentuk dan penempatannya perlu ditelaah praktisi Betawi.</p>
+              </section>
+
+
+              <div class="privacy-card privacy-card-v8"><span>🔒</span><div><b>Privasi dan batas fitur</b><p>Pelacakan kamera diproses lokal. Video hanya disimpan ke Paspor jika kamu memilihnya. Gerakan dalam panduan adalah latihan pengantar, bukan koreografi Betawi resmi yang telah divalidasi.</p></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="page-competency">
+          <div class="page-intro"><div><div class="eyebrow">NADI KIT · KOMPONEN 01</div><h1>Peta <em>kompetensi.</em></h1><p>Catat kemampuan awal secara mandiri. Penilaian ini bersifat pemetaan awal, bukan sertifikasi.</p></div><div class="intro-badge">0–4 SKALA LATIHAN</div></div>
+          <div class="competency-layout"><div class="panel competency-form"><div class="panel-head"><h3>Bagaimana kemampuanmu sekarang?</h3><span class="tag-soft">PENILAIAN DIRI</span></div><p class="muted-note">0 = belum pernah mencoba · 1 = perlu banyak bantuan · 2 = mulai memahami · 3 = cukup mandiri · 4 = percaya diri</p><div id="competencyFields"></div><button class="btn btn-primary" id="saveCompetency">Simpan peta kompetensi <span>→</span></button></div><div class="panel competency-summary"><div class="eyebrow">PRIORITAS LATIHAN</div><h3>Rekomendasi awal</h3><div id="competencySummary"><p>Isi penilaian di kiri untuk melihat area yang bisa dilatih lebih dulu.</p></div><button class="btn btn-outline" data-page="path">Lihat jalur adaptif →</button></div></div>
+        </section>
+
+        <section class="page" id="page-path">
+          <div class="page-intro"><div><div class="eyebrow">NADI KIT · KOMPONEN 02 & 03</div><h1>Belajar dengan <em>jalur adaptif.</em></h1><p>Prioritas latihan disusun dari pemetaan kemampuan. Rekomendasi ini adalah prototipe awal yang masih perlu disesuaikan dengan praktisi.</p></div><span class="intro-emoji">⇢</span></div>
+          <div class="path-grid"><div class="panel path-main"><div class="eyebrow">JALUR YANG DISARANKAN</div><h3 id="pathTitle">Mulai dari dasar</h3><p id="pathDesc">Lengkapi peta kompetensi untuk mendapatkan prioritas belajar.</p><div id="pathSteps" class="path-steps"></div><button class="btn btn-primary" data-page="games">Mulai sesi latihan <span>→</span></button></div><div class="panel matching-panel"><div class="eyebrow">PENCOCOKAN KEBUTUHAN</div><h3>Kenapa latihan ini dipilih?</h3><p id="matchingText">Sistem akan membandingkan lima area kompetensi mandiri dan menyarankan fokus latihan terendah.</p><div class="matching-legend"><span><i class="dot-low"></i> Perlu diprioritaskan</span><span><i class="dot-mid"></i> Sedang berkembang</span><span><i class="dot-high"></i> Kekuatan saat ini</span></div></div></div>
+        </section>
+
+        <section class="page" id="page-passport">
+          <div class="page-intro"><div><div class="eyebrow">NADI KIT · KOMPONEN 04</div><h1>Paspor <em>Perkembangan Budaya.</em></h1><p>Jejak latihan, karya, dan refleksi tersimpan lokal untuk membantu meninjau perkembangan.</p></div><button class="btn btn-outline" id="exportData">Ekspor data CSV ↓</button></div>
+          <div class="passport-top"><div class="passport-card"><div class="passport-pattern">✿　✦　✿</div><img class="passport-logo" src="/static/nadi-budaya-emblem.png" alt="Logo Nadi Budaya"/><span class="eyebrow">PASPOR BUDAYA</span><h2 id="passportName">Penjelajah Budaya</h2><p>PEMBELAJAR GAM BANG RANCAG</p><div class="passport-bottom"><span id="passportLevel">TINGKAT 1</span><span id="passportXp">0 XP</span></div></div><div class="panel passport-stats"><div class="eyebrow">RINGKASAN PERJALANAN</div><div class="passport-metrics"><div><b id="passportActivities">0</b><span>Aktivitas</span></div><div><b id="passportPantuns">0</b><span>Pantun tersimpan</span></div><div><b id="passportGames">0</b><span>Game selesai</span></div><div><b id="passportPerformances">0</b><span>Rekaman panggung</span></div></div><div class="passport-badges" id="passportBadges"><span class="badge-lock">🔒 Penjelajah Awal</span><span class="badge-lock">🔒 Perangkai Kata</span><span class="badge-lock">🔒 Penjaga Cerita</span></div></div></div>
+          <div class="passport-grid"><div class="panel"><div class="panel-head"><h3>Kompetensi yang dipetakan</h3><button class="small-link" data-page="competency">Perbarui →</button></div><div id="passportCompetencies"></div></div><div class="panel"><div class="panel-head"><h3>Aktivitas terbaru</h3><span class="tag-soft">LOKAL</span></div><div id="activityHistory" class="history-list"></div></div></div>
+          <div class="panel saved-work"><div class="panel-head"><h3>Pantun karyaku</h3><span class="tag-soft" id="pantunListCount">0 KARYA</span></div><div id="savedPantunsList" class="saved-pantuns-list"></div></div>
+          <div class="panel saved-work performance-passport-panel">
+            <div class="panel-head"><div><span class="eyebrow">PANGGUNG BETAWI</span><h3>Rekaman penampilanku</h3></div><span class="tag-soft" id="performanceCount">0 REKAMAN</span></div>
+            <p class="muted-note">Video yang kamu pilih untuk disimpan akan berada di folder lokal aplikasi pada perangkat ini. Rekaman tidak dikirim ke internet.</p>
+            <div id="performancesList" class="performances-list"><div class="empty-state">Belum ada rekaman panggung. Selesai merekam? Pilih “Simpan ke Paspor Budaya” agar penampilanmu tercatat di sini.</div></div>
+          </div>
+        </section>
+
+        <section class="page" id="page-settings">
+          <div class="page-intro"><div><div class="eyebrow">RUANG RAMAH SEMUA</div><h1>Atur cara <em>belajarmu.</em></h1><p>Sesuaikan tampilan dan interaksi agar lebih nyaman digunakan.</p></div><span class="intro-emoji">☼</span></div>
+          <div class="settings-grid"><div class="panel setting-panel"><div class="eyebrow">TAMPILAN</div><h3>Tema warna</h3><div class="choice-row"><button class="theme-choice selected" data-theme="light"><span class="theme-swatch swatch-light"></span>Terang</button><button class="theme-choice" data-theme="dark"><span class="theme-swatch swatch-dark"></span>Gelap</button><button class="theme-choice" data-theme="contrast"><span class="theme-swatch swatch-contrast"></span>Kontras tinggi</button></div><div class="setting-divider"></div><h3>Ukuran teks</h3><div class="range-row"><input id="fontScale" type="range" min="90" max="175" step="5" value="100"><b id="fontScaleLabel">100%</b></div><div class="setting-divider"></div><h3>Mode Baca Nyaman</h3><label class="field-label" for="readingFont">Gaya huruf</label><select id="readingFont" class="text-input"><option value="standard">Standar</option><option value="dyslexia">Ramah baca (OpenDyslexic bila terpasang)</option><option value="verdana">Verdana</option></select><div class="range-row"><label for="letterSpacing">Jarak huruf</label><input id="letterSpacing" type="range" min="0" max="0.2" step="0.02" value="0"><b id="letterSpacingLabel">0</b></div><div class="range-row"><label for="lineSpacing">Jarak baris</label><input id="lineSpacing" type="range" min="1" max="2" step="0.05" value="1.45"><b id="lineSpacingLabel">1.45</b></div><div class="setting-divider"></div><h3>Nama tampilan</h3><div class="inline-edit"><input id="profileName" class="text-input" maxlength="32" placeholder="Nama panggilan"><button class="btn btn-outline" id="saveProfile">Simpan</button></div></div><div class="panel setting-panel"><div class="eyebrow">AKSESIBILITAS</div><h3>Preferensi belajar</h3><label class="toggle-row"><span><b>Mode inklusif</b><small>Aktifkan ukuran tombol besar dan kontras nyaman.</small></span><input type="checkbox" id="inclusiveToggle"></label><label class="toggle-row"><span><b>Kurangi animasi</b><small>Minimalkan gerakan dekoratif pada tampilan.</small></span><input type="checkbox" id="motionToggle"></label><label class="toggle-row"><span><b>Petunjuk teks tambahan</b><small>Tampilkan atau ringkas keterangan tambahan tertulis pada kartu belajar.</small></span><input type="checkbox" id="captionsToggle" checked></label><label class="toggle-row"><span><b>Tombol lebih besar</b><small>Perbesar area interaksi.</small></span><input type="checkbox" id="buttonsToggle"></label><label class="toggle-row"><span><b>Mode sederhana</b><small>Sembunyikan elemen dekoratif yang tidak penting.</small></span><input type="checkbox" id="simpleToggle"></label><label class="toggle-row"><span><b>Musik Betawi latar</b><small>Musik audio saja, berulang selama aplikasi digunakan. Jika pernah diaktifkan, akan mencoba mulai setelah interaksi pertama. Perlu file audio berizin di folder aplikasi.</small></span><input type="checkbox" id="settingsMusicToggle"></label><div class="range-row"><label for="musicVolume">Volume musik</label><input id="musicVolume" type="range" min="0" max="1" step="0.05" value="0.3"><b id="musicVolumeLabel">30%</b></div><div class="small-row"><button class="btn btn-outline" id="musicTest" type="button">Nyalakan / matikan musik</button><span class="muted-note" id="musicFileHelp">File: app/static/audio/betawi-background.mp3</span></div><div class="setting-divider"></div><button class="btn btn-outline" id="reopenIntro">Lihat pengantar & pilih peran</button></div></div>
+          <div class="panel speech-access-panel">
+            <div class="eyebrow">NADI VOICE ASSISTANT</div>
+            <h3>Pendamping suara</h3>
+            <p class="muted-note">Aktifkan bantuan sesuai kebutuhan. Suara menggunakan Text-to-Speech dari browser dan suara yang tersedia pada perangkat. Gunakan hanya fitur yang nyaman; pembaca layar bawaan seperti TalkBack atau VoiceOver dapat mengumumkan hal yang sama.</p>
+            <div class="voice-assistant-options">
+              <label class="toggle-row"><span><b>Jelajah Suara</b><small>Bacakan nama dan fungsi tombol, tautan, pilihan, dan kolom saat mendapat fokus.</small></span><input type="checkbox" id="voiceFocusToggle"></label>
+              <label class="toggle-row"><span><b>Typing Voice</b><small>Bacakan huruf atau kata saat mengetik di kolom teks. Kolom PIN/kata sandi tidak pernah dibacakan.</small></span><input type="checkbox" id="voiceTypingToggle"></label>
+              <label class="toggle-row"><span><b>Game Voice</b><small>Bacakan instruksi dan umpan balik saat bermain. Pilihan jawaban dibacakan saat difokuskan.</small></span><input type="checkbox" id="voiceGameToggle"></label>
+            </div>
+            <div class="speech-controls-grid">
+              <label class="field-label" for="typingEcho">Cara membaca ketikan</label>
+              <select id="typingEcho" class="text-input"><option value="word">Kata setelah jeda</option><option value="letter">Huruf satu per satu</option><option value="both">Huruf dan kata</option></select>
+              <label class="field-label" for="ttsVoice">Suara pembaca</label>
+              <select id="ttsVoice" class="text-input" aria-label="Pilih suara pembaca"></select>
+              <label class="field-label" for="ttsRate">Kecepatan membaca <span id="ttsRateLabel">0,9×</span></label>
+              <input id="ttsRate" type="range" min="0.65" max="1.35" step="0.05" value="0.9">
+              <label class="field-label" for="ttsVolume">Volume suara pembaca <span id="ttsVolumeLabel">100%</span></label>
+              <input id="ttsVolume" type="range" min="0.2" max="1" step="0.05" value="1">
+              <label class="field-label" for="ttsText">Coba baca atau eja teks</label>
+              <textarea id="ttsText" class="text-input" rows="3" maxlength="1200" placeholder="Contoh: Nadi Budaya membantu kita mengenal pantun Betawi."></textarea>
+            </div>
+            <div class="speech-action-row">
+              <button class="btn btn-primary" id="ttsReadText" type="button">▶ Baca kalimat</button>
+              <button class="btn btn-outline" id="ttsSpellWord" type="button">A–Z Eja lalu baca kata</button>
+              <button class="btn btn-outline" id="ttsReadPage" type="button">Bacakan halaman aktif</button>
+              <button class="btn btn-outline" id="ttsStop" type="button">■ Berhenti</button>
+            </div>
+            <p class="speech-status" id="ttsStatus" role="status" aria-live="polite">Pendamping suara siap diatur. Aktifkan Jelajah Suara, Typing Voice, atau Game Voice sesuai kebutuhan.</p>
+            <div class="setting-divider"></div>
+            <h3>Petunjuk visual & caption</h3>
+            <p class="muted-note">Untuk pengguna tunarungu, informasi penting tetap tersedia dalam teks dan indikator visual. Suara bukan pengganti caption atau bahasa isyarat.</p>
+          </div>
+          <div class="note-strip"><span>ⓘ</span><p>Pengaturan disimpan secara lokal pada perangkat yang menjalankan aplikasi. Ketersediaan suara Indonesia mengikuti dukungan browser dan sistem operasi.</p></div>
+        </section>
+
+        <section class="page" id="page-teacher">
+          <div class="page-intro"><div><div class="eyebrow">RUANG GURU & PENELAAH</div><h1>Amati perkembangan, <em>catat prosesnya.</em></h1><p>Gunakan kode peserta, tahap awal/proses/akhir, rubrik 0–4, dan bukti pengamatan. Penilaian ini perlu diselaraskan bersama praktisi.</p></div><span class="intro-emoji">▤</span></div>
+          <div class="teacher-warning"><b>Mode penilaian lokal</b><span>PIN demo bukan sistem keamanan untuk penggunaan publik. Jangan masukkan data sensitif; gunakan kode peserta.</span></div>
+          <div class="teacher-layout"><div class="panel teacher-form"><div class="panel-head"><h3>Form penilaian peserta</h3><span class="tag-soft">RUBRIK AWAL</span></div>
+            <label class="field-label" for="teacherParticipantCode">Kode peserta (pseudonim)</label><input id="teacherParticipantCode" class="text-input" maxlength="24" placeholder="Contoh: P-001"/>
+            <label class="field-label" for="teacherName">Nama guru / penelaah</label><input id="teacherName" class="text-input" maxlength="50" placeholder="Nama penilai"/>
+            <label class="field-label" for="teacherStage">Tahap penilaian</label><select id="teacherStage" class="text-input"><option value="initial">Awal (sebelum latihan)</option><option value="ongoing" selected>Proses latihan</option><option value="final">Akhir (setelah latihan)</option></select>
+            <label class="field-label" for="teacherArea">Area kompetensi</label><select id="teacherArea" class="text-input"><option value="structure">Memahami struktur pantun</option><option value="compose">Menyusun pantun</option><option value="improvise">Merespons pantun spontan</option><option value="story">Memahami cerita dan pantun berkait</option><option value="performance">Ekspresi dan irama penyampaian</option></select>
+            <label class="field-label" for="teacherScore">Skor pengamatan (0–4)</label><select id="teacherScore" class="text-input"><option value="0">0 · Belum tampak / belum dicoba</option><option value="1">1 · Memerlukan banyak bantuan</option><option value="2">2 · Mulai berkembang dengan arahan</option><option value="3">3 · Cukup mandiri pada tugas ini</option><option value="4">4 · Konsisten pada tugas yang diamati</option></select>
+            <label class="field-label" for="teacherEvidence">Bukti / catatan observasi</label><textarea id="teacherEvidence" class="text-input" rows="4" maxlength="1000" placeholder="Tuliskan contoh perilaku atau hasil yang diamati, bukan kesan umum saja."></textarea>
+            <button class="btn btn-primary" id="saveTeacherAssessment">Simpan penilaian</button>
+          </div><aside class="panel teacher-info"><div class="eyebrow">PANDUAN PENGGUNAAN</div><h3>Catat bukti, bukan asumsi.</h3><ol><li>Gunakan kode peserta, bukan data pribadi sensitif.</li><li>Tulis konteks atau contoh yang diamati.</li><li>Gunakan rubrik setelah tugas yang sesuai dilakukan.</li><li>Praktisi Gambang Rancag perlu menelaah indikator budaya.</li></ol><p class="muted-note">Skala pada prototipe ini bersifat rancangan awal dan belum menjadi rubrik tervalidasi.</p><button class="btn btn-outline" id="teacherRefresh">Muat ulang daftar penilaian</button><button class="small-link" id="teacherLogout">Keluar dari Ruang Guru</button></aside></div>
+          <div class="panel teacher-table-panel"><div class="panel-head"><h3>Riwayat penilaian lokal</h3><span class="tag-soft" id="teacherAssessmentCount">0 CATATAN</span></div><div id="teacherAssessmentList" class="teacher-assessment-list"><div class="empty-state">Belum ada catatan penilaian.</div></div></div>
+        </section>
+
+        <section class="page" id="page-research">
+          <div class="page-intro"><div><div class="eyebrow">KONTEKS PENELITIAN OPSI 2027</div><h1>Belajar untuk <em>meneruskan tradisi.</em></h1><p>Nadi Budaya adalah prototipe media untuk membantu penerapan model regenerasi adaptif keterampilan Gambang Rancag Betawi.</p></div><span class="intro-emoji">🏵</span></div>
+          <div class="research-hero"><span>✦</span><div><div class="eyebrow">NADI BUDAYA</div><h2>Model Regenerasi Adaptif Keterampilan Gambang Rancag Betawi</h2><p>SMK Cinta Kasih Tzu Chi · Tim NARADAYA · OPSI 2027</p></div></div>
+          <div class="research-grid"><div class="panel"><span class="research-icon">01</span><h3>Masalah yang dikaji</h3><p>Pengenalan tradisi dan pewarisan keterampilan Gambang Rancag, terutama penyusunan serta pelantunan pantun secara spontan, menjadi fokus kajian.</p></div><div class="panel"><span class="research-icon">02</span><h3>Empat komponen Nadi Kit</h3><p>Peta Kompetensi, Pencocokan Kebutuhan Belajar, Jalur Pendampingan Adaptif, dan Paspor Perkembangan Budaya dirancang sebagai satu siklus operasional.</p></div><div class="panel"><span class="research-icon">03</span><h3>Metode & batasan</h3><p>Studi literatur, wawancara semi-terstruktur, observasi bila memungkinkan, telaah praktisi, dan uji coba terbatas. Tujuannya menilai kelayakan awal, bukan efektivitas jangka panjang.</p></div><div class="panel"><span class="research-icon">04</span><h3>Kerangka pelindungan</h3><p>Model mengacu pada prinsip transmisi warisan budaya takbenda dalam Konvensi UNESCO 2003 dan relevan dengan SDG 11 Target 11.4.</p></div></div>
+          <div class="panel review-panel"><div class="panel-head"><div><div class="eyebrow">LEMBAR TELAAH</div><h3>Catatan praktisi / penelaah</h3></div><span class="tag-soft">BELUM TERVALIDASI</span></div><p>Gunakan bagian ini untuk mencatat masukan setelah materi dan indikator ditinjau oleh praktisi. Jangan mengisi seolah-olah validasi telah dilakukan.</p><div class="review-fields"><label>Area yang ditelaah<select id="reviewArea"><option>Materi pantun</option><option>Indikator kompetensi</option><option>Jalur pendampingan</option><option>Alur Panggung Rancag</option><option>Aksesibilitas dan keterpakaian</option><option>Keseluruhan prototipe</option></select></label><label>Peran penelaah<input id="reviewRole" maxlength="40" value="Praktisi/penelaah"></label><label class="review-note">Catatan<textarea id="reviewNote" rows="3" maxlength="1000" placeholder="Tuliskan masukan yang benar-benar diberikan oleh penelaah..."></textarea></label></div><button class="btn btn-primary" id="saveReview">Simpan catatan telaah</button><div id="reviewHistory" class="review-history"></div></div>
+          <div class="source-card research-sources"><div class="eyebrow">SUMBER TERBUKA UNTUK KONTEKS BUDAYA</div><a href="https://dapobas.kemendikdasmen.go.id/homecat.php?cat=17&listby=1&page=1&show=url%2Fregsastra2" target="_blank" rel="noopener">Badan Bahasa — Gambang Rancag ↗</a><a href="https://dinaskebudayaan.jakarta.go.id/page/501/1771?from=index" target="_blank" rel="noopener">Dinas Kebudayaan DKI Jakarta — Gambang Rancag, Seni Pantun Berkait ↗</a><a href="https://ich.unesco.org/doc/src/43756.pdf" target="_blank" rel="noopener">UNESCO — Formulir pencatatan Pantun Rancag ↗</a></div>
+        </section>
+      </div>
+      <footer class="app-footer"><span>NADI BUDAYA © 2027</span><span>Merawat tradisi bersama komunitas.</span></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/static/browser_camera.js" defer></script>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

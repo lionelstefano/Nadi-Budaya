@@ -1,0 +1,49 @@
+{
+  "profile": {
+    "name": "Penjelajah Budaya"
+  },
+  "xp": 0,
+  "level": 1,
+  "stats": {
+    "activities": 0,
+    "quiz_answered": 0,
+    "quiz_correct": 0,
+    "games_finished": 0,
+    "performances_saved": 0
+  },
+  "competencies": {
+    "structure": 0,
+    "compose": 0,
+    "improvise": 0,
+    "story": 0,
+    "performance": 0
+  },
+  "baseline_saved": false,
+  "saved_pantuns": [],
+  "performances": [],
+  "history": [],
+  "practitioner_notes": [],
+  "teacher_assessments": [],
+  "settings": {
+    "theme": "contrast",
+    "font_scale": 100,
+    "inclusive": false,
+    "reduced_motion": false,
+    "captions": true,
+    "large_buttons": false,
+    "simple_mode": false,
+    "dyslexia_font": false,
+    "reading_font": "standard",
+    "letter_spacing": 0.0,
+    "line_spacing": 1.45,
+    "music_enabled": false,
+    "music_volume": 0.3,
+    "voice_focus": false,
+    "voice_typing": false,
+    "voice_game": false,
+    "typing_echo": "word",
+    "tts_rate": 0.9,
+    "tts_volume": 1.0,
+    "tts_voice": "Google Bahasa Indonesia"
+  }
+}

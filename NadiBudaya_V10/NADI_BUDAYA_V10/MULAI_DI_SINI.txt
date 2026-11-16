@@ -1,0 +1,30 @@
+NADI BUDAYA V10 — RELEASE CANDIDATE
+Ruang Cerita Betawi
+
+JALANKAN DI WINDOWS / VS CODE
+1. Extract ZIP ke folder NADI_BUDAYA_V10.
+2. Buka folder yang langsung memiliki setup_windows.bat di VS Code.
+3. Terminal > New Terminal (PowerShell).
+4. Jalankan satu kali: .\setup_windows.bat
+5. Setelah selesai: .\run_windows.bat
+6. Buka Chrome: http://127.0.0.1:8010
+7. Opsional: klik dua kali pasang_mulai_v10.bat; buka terminal PowerShell baru, lalu ketik: mulai
+
+KAMERA
+- Mode lokal default memakai webcam browser di komputer yang membuka website.
+- Browser meminta izin kamera. Model MediaPipe browser perlu internet saat pertama kali dimuat.
+- Untuk merekam, pilih kamera, izinkan mikrofon bila diperlukan, lalu tekan rekam.
+- Rekaman tidak tersimpan sebelum pengguna menekan Simpan ke Paspor atau Unduh.
+
+DEPLOY KE GITHUB + VERCEL
+- Baca README.md bagian B, C, dan D.
+- Buat Supabase project dan jalankan supabase/schema.sql.
+- Isi SUPABASE_URL, SUPABASE_SECRET_KEY, SUPABASE_STORAGE_BUCKET,
+  NADI_SESSION_SECRET, NADI_GURU_PIN, dan NADI_CAMERA_BACKEND pada Vercel.
+- Secret key tidak boleh dimasukkan ke file JavaScript atau repository.
+- V10 belum otomatis membuat repo GitHub atau deployment Vercel di akunmu.
+
+VERSI
+- V10 lokal: port 8010.
+- Vercel: gunakan domain deployment yang diberikan Vercel.
+- V9 dan versi sebelumnya tetap aman; jangan menimpa folder lama.
